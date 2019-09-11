@@ -3,6 +3,7 @@
 //phpinfo(); die();
 
 require("config.php");
+require("HelpFunctions.php");
 
 try {
     initApplication();
