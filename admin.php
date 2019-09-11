@@ -1,75 +1,95 @@
 <?php
 
-require("config.php");
+require("config.php");// Подключение конфигов и констант
+require("HelpFunctions.php");// Подключение функции trace для проверки кода 
+
+
 session_start();
 $action = isset($_GET['action']) ? $_GET['action'] : "";
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
 
-if ($action != "login" && $action != "logout" && !$username) {
+/**
+ * Если $action и $logout 
+ * Если это не вход или выход и пользв-ля несуществует то 
+ * вывзывается метод login 
+ */
+if ($action != "login" && $action != "logout" && !$username) 
+{
     login();
     exit;
 }
 
-switch ($action) {
+/**
+ * При повторном заходе уже с сессией происходит выполнение данного switch
+ * и выбирается что показать пользвателю,
+ * Если или по дефолту вызывается listArticles() - Показать все статьи
+ */
+switch ($action) 
+{
     case 'login':
-        login();
+        login();// Вход для админа
         break;
-    case 'logout':
+    case 'logout':// Удалить сессию и перезайти на этотже скрипт
         logout();
         break;
-    case 'newArticle':
+    case 'newArticle':// Создать новую статью
         newArticle();
         break;
-    case 'editArticle':
+    case 'editArticle':// Редактирование статьи 
         editArticle();
         break;
-    case 'deleteArticle':
+    case 'deleteArticle':// Удалить статью из БД
         deleteArticle();
         break;
-    case 'listCategories':
+    case 'listCategories':// Показать все категории
         listCategories();
         break;
-    case 'newCategory':
+    case 'newCategory':// Создать новую категорию
         newCategory();
         break;
-    case 'editCategory':
+    case 'editCategory':// Редактировать категории
         editCategory();
         break;
-    case 'deleteCategory':
+    case 'deleteCategory':// Удалить категорию
         deleteCategory();
         break;
     default:
-        listArticles();
+        listArticles();// Показать все статьи по дефолту
 }
 
 /**
  * Авторизация пользователя (админа) -- установка значения в сессию
  */
-function login() {
-
+function login() 
+{
     $results = array();
     $results['pageTitle'] = "Admin Login | Widget News";
 
-    if (isset($_POST['login'])) {
-
+    /**  
+     * Если $_POST неотправлен с формы то мы даем ему форму, 
+     * Если форма отправлена то проверка, на верность пароля и логина
+     * Если ошибка то выводим ошибку. Если все верно то 
+     * Регистр-ем Сессию и перенаправляем его наэтуже страницу только уже с регистрацией.
+     */
+    if (isset($_POST['login'])) 
+    {
         // Пользователь получает форму входа: попытка авторизировать пользователя
-
+    
         if ($_POST['username'] == ADMIN_USERNAME 
-                && $_POST['password'] == ADMIN_PASSWORD) {
-
+                && $_POST['password'] == ADMIN_PASSWORD) 
+        {
+           
           // Вход прошел успешно: создаем сессию и перенаправляем на страницу администратора
           $_SESSION['username'] = ADMIN_USERNAME;
           header( "Location: admin.php");
 
         } else {
-
           // Ошибка входа: выводим сообщение об ошибке для пользователя
           $results['errorMessage'] = "Неправильный пароль, попробуйте ещё раз.";
           require( TEMPLATE_PATH . "/admin/loginForm.php" );
         }
 
     } else {
-
       // Пользователь еще не получил форму: выводим форму
       require(TEMPLATE_PATH . "/admin/loginForm.php");
     }
@@ -77,31 +97,38 @@ function login() {
 }
 
 
-function logout() {
+/**
+ * Выход - Удалить сессию и перенаправить на этотже скрипт
+ */
+function logout() 
+{
     unset( $_SESSION['username'] );
     header( "Location: admin.php" );
 }
 
-
-function newArticle() {
+/**
+ *  Создание новой статьи 
+ */
+function newArticle() 
+{
 	  
     $results = array();
     $results['pageTitle'] = "New Article";
     $results['formAction'] = "newArticle";
 
-    if ( isset( $_POST['saveChanges'] ) ) {
-//            echo "<pre>";
-//            print_r($results);
-//            print_r($_POST);
-//            echo "<pre>";
-//            В $_POST данные о статье сохраняются корректно
+    if ( isset( $_POST['saveChanges'] ) ) 
+    {
+        //  trace($results);  trace($_POST);
+          
+        
+        // В $_POST данные о статье сохраняются корректно
         // Пользователь получает форму редактирования статьи: сохраняем новую статью
         $article = new Article();
         $article->storeFormValues( $_POST );
-//            echo "<pre>";
-//            print_r($article);
-//            echo "<pre>";
-//            А здесь данные массива $article уже неполные(есть только Число от даты, категория и полный текст статьи)          
+        // trace($article);
+        // 
+        // 
+        //А здесь данные массива $article уже неполные(есть только Число от даты, категория и полный текст статьи)          
         $article->insert();
         header( "Location: admin.php?status=changesSaved" );
 
@@ -159,9 +186,18 @@ function editArticle() {
 }
 
 
-function deleteArticle() {
 
-    if ( !$article = Article::getById( (int)$_GET['articleId'] ) ) {
+
+/**
+ * Удаление статьи по id, если ошибка то перенаправление на этотже скрипт
+ * и создать ошибку - статья не найдена.
+ * Если успешно то удалить статью и перенаправить на себя же 
+ * и вывести сообщение что статья удалена
+ */
+function deleteArticle() 
+{
+    if ( !$article = Article::getById( (int)$_GET['articleId'] ) ) 
+    {
         header( "Location: admin.php?error=articleNotFound" );
         return;
     }
@@ -171,6 +207,11 @@ function deleteArticle() {
 }
 
 
+
+
+/** 
+ * Вывод всех статей в админке по дефолту
+ */
 function listArticles() {
     $results = array();
     
@@ -178,20 +219,31 @@ function listArticles() {
     $results['articles'] = $data['results'];
     $results['totalRows'] = $data['totalRows'];
     
+    // trace($results);
+    
     $data = Category::getList();
     $results['categories'] = array();
-    foreach ($data['results'] as $category) { 
+    foreach ($data['results'] as $category) 
+    { 
         $results['categories'][$category->id] = $category;
     }
     
     $results['pageTitle'] = "Все статьи";
-
-    if (isset($_GET['error'])) { // вывод сообщения об ошибке (если есть)
-        if ($_GET['error'] == "articleNotFound") 
+     
+   
+    // вывод сообщения об ошибке (если есть) Статья не найдена
+    if (isset($_GET['error'])) 
+    { 
+        if ($_GET['error'] == "articleNotFound")
+        {
             $results['errorMessage'] = "Error: Article not found.";
+        }
     }
 
-    if (isset($_GET['status'])) { // вывод сообщения (если есть)
+    
+    // вывод сообщения (если есть)
+    if (isset($_GET['status'])) 
+    { 
         if ($_GET['status'] == "changesSaved") {
             $results['statusMessage'] = "Your changes have been saved.";
         }
@@ -200,9 +252,16 @@ function listArticles() {
         }
     }
 
-    require(TEMPLATE_PATH . "/admin/listArticles.php" );
+    
+    require(TEMPLATE_PATH . "/admin/listArticles.php" );// Подключение вида, для вывода всех статей наэкран
 }
 
+
+
+
+/**
+ * 
+ */
 function listCategories() {
     $results = array();
     $data = Category::getList();

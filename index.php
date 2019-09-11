@@ -1,7 +1,19 @@
 <?php
-
 //phpinfo(); die();
 
+/*
+Внести изменение в таблицу articles
+ALTER TABLE `articles`
+	ADD COLUMN `active` SMALLINT(5) NOT NULL DEFAULT '1' AFTER `content`;
+
+Преведущая версия запроса на выборку
+FROM articles $categoryClause 
+
+
+
+
+
+*/
 require("config.php");
 require("HelpFunctions.php");
 
@@ -28,6 +40,7 @@ function initApplication()
           homepage();
     }
 }
+
 
 function archive() 
 {
@@ -98,11 +111,8 @@ function homepage()
     } 
     
     $results['pageTitle'] = "Простая CMS на PHP";
-    
-//    echo "<pre>";
-//    print_r($data);
-//    echo "</pre>";
-//    die();
+
+    // trace($data);
     
     require(TEMPLATE_PATH . "/homepage.php");
     

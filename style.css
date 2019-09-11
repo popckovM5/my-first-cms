@@ -1,16 +1,19 @@
 /* Стили для body and внешнего контейнера */
 	 
+/*=== Мои стили для функции trace ===*/
 #trace{
     margin: 20px;
-    border: 2px solid red;
+    border: 2px solid green;
     padding: 10px;
     background: black;
-    color: white;
+    color: green;
     font-weight: 1000;
 }
 #trace h4{
-    color: red;
+    color: green;
 }
+/*===================================*/
+
 
 body {
   margin: 0;

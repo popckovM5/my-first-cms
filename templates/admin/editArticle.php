@@ -30,7 +30,14 @@
                 <label for="content">Article Content</label>
                 <textarea name="content" id="content" placeholder="The HTML content of the article" required maxlength="100000" style="height: 30em;"><?php echo htmlspecialchars( $results['article']->content )?></textarea>
               </li>
-
+<!--========================ТУТ ДОБАВИЛ ПОЛЕДЛЯ ACTIVE================================-->
+               <li>
+                <label for="content">Active</label>
+               <input type="checkbox" checked>
+               
+                    <?php //echo htmlspecialchars( $results['article']->active )?>
+              </li>
+<!--========================================================-->
               <li>
                 <label for="categoryId">Article Category</label>
                 <select name="categoryId">

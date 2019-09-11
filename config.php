@@ -15,7 +15,7 @@ try {
     // Объявление констант, используемых в проекте
     $CmsConfiguration["CLASS_PATH"] = "classes";
     $CmsConfiguration["TEMPLATE_PATH"] = "templates";
-    $CmsConfiguration["HOMEPAGE_NUM_ARTICLES"] = 5;
+    $CmsConfiguration["HOMEPAGE_NUM_ARTICLES"] = 100;
     $CmsConfiguration["ADMIN_USERNAME"] = "admin";
     $CmsConfiguration["ADMIN_PASSWORD"] = "mypass";
     

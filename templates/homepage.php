@@ -27,6 +27,7 @@
                 <?php } ?>
             </h2>
            
+            <!-- ============================== Первое задание! ======================== -->
            <!-- Вывод не summary а 50 первых символов content -->
             <div style="width: 75%;">
                 <?php
@@ -41,6 +42,7 @@
                 <?php// echo htmlspecialchars($article->summary)?>
             </p> 
             -->
+            <!-- =============================== Конец ================================= -->
        
             <img id="loader-identity" src="JS/ajax-loader.gif" alt="gif">
             
