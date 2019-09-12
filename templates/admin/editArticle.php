@@ -32,9 +32,9 @@
               </li>
 <!--========================ТУТ ДОБАВИЛ ПОЛЕДЛЯ ACTIVE================================-->
                <li>
-                <label for="content">Active</label>
-               <input type="checkbox" checked>
-               
+                  <label for="content">Active</label>
+                  -Yes<input type="radio"  name="active" value="1">
+                  -No<input type="radio"  name="active" value="0">
                     <?php //echo htmlspecialchars( $results['article']->active )?>
               </li>
 <!--========================================================-->

@@ -11,6 +11,16 @@ FROM articles $categoryClause
 
 
 
+CREATE TABLE `users` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `login` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `active` smallint(5) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+
+
 
 
 */
@@ -100,7 +110,7 @@ function viewArticle()
 function homepage() 
 {
     $results = array();
-    $data = Article::getList(HOMEPAGE_NUM_ARTICLES);
+    $data = Article::getList(HOMEPAGE_NUM_ARTICLES, null, "publicationDate DESC", 1);
     $results['articles'] = $data['results'];
     $results['totalRows'] = $data['totalRows'];
     

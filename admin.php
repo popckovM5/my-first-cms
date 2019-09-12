@@ -209,6 +209,8 @@ function deleteArticle()
 
 
 
+
+
 /** 
  * Вывод всех статей в админке по дефолту
  */
@@ -255,6 +257,10 @@ function listArticles() {
     
     require(TEMPLATE_PATH . "/admin/listArticles.php" );// Подключение вида, для вывода всех статей наэкран
 }
+
+
+
+
 
 
 
