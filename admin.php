@@ -85,6 +85,7 @@ function login()
     $results['pageTitle'] = "Admin Login | Widget News";
     $users = Users::getAllUsers();
 
+
     /**  
      * Если $_POST неотправлен с формы то мы даем ему форму, 
      * Если форма отправлена то проверка, на верность пароля и логина
@@ -105,15 +106,17 @@ function login()
         /* Проверка на User */        
         foreach ($users['results'] as $user) 
         {
-            if ($_POST['username'] == $user['login']) 
+            if($user->active == 1)
             {
-                if (password_verify($_POST['password'], $user['password'])) 
-                {  
-                    $_SESSION['username'] = $user['login'];
-                    header( "Location: admin.php");
+                if ($_POST['username'] == $user->login) 
+                {
+                    if (password_verify($_POST['password'], $user->password)) 
+                    {  
+                        $_SESSION['username'] = $user->login;
+                        header( "Location: admin.php");
+                    }
                 }
             }
-            
         } 
     } 
 
@@ -407,40 +410,55 @@ function deleteCategory() {
 /**
  * 
  */
-function listUsers() {
-    $results = array();
-    $data = Users::getAllUsers();
+function listUsers() 
+{
+    if( !($_SESSION['username'] == ADMIN_USERNAME) ){ 
+       header( "Location: admin.php" );
+    }
 
-    $results['users'] = $data['results'];
-    $results['totalRows'] = $data['totalRows'];
-    $results['pageTitle'] = "Users Categories";
+        $results = array();
+        $data = Users::getAllUsers();
 
+        $results['users'] = $data['results'];
+        $results['totalRows'] = $data['totalRows'];
+        $results['pageTitle'] = "Users Categories";
+    
 
-    if ( isset( $_GET['error'] ) ) 
-    {
-        if ( $_GET['error'] == "UserNotFound" ) 
+        if ( isset( $_GET['error'] ) ) 
         {
-            $results['errorMessage'] = "Error: User not found.";
+            if ( $_GET['error'] == "UserNotFound" ) 
+            {
+                $results['errorMessage'] = "Error: User not found.";
+            }
         }
-    }
 
 
-    if ( isset( $_GET['status'] ) ) {
-        if ( $_GET['status'] == "changesSaved" ) $results['statusMessage'] = "Your changes have been saved.";
-        if ( $_GET['status'] == "userDeleted" ) $results['statusMessage'] = "Users deleted.";
-    }
-
-    require( TEMPLATE_PATH . "/admin/listUsers.php" );
+        if ( isset( $_GET['status'] ) ) {
+            if ( $_GET['status'] == "changesSaved" ) $results['statusMessage'] = "Your changes have been saved.";
+            if ( $_GET['status'] == "userDeleted" ) $results['statusMessage'] = "Users deleted.";
+        }
+       
+        require( TEMPLATE_PATH . "/admin/listUsers.php" );
+   
 }
       
 
 
+
+
+
+  
+
+
 /**
- *  Создание новой статьи 
+ *  Создание нового Пользвателя 
  */
 function newUser() 
 {
-
+     if( !($_SESSION['username'] == ADMIN_USERNAME) ){ 
+       header( "Location: admin.php" );
+    }
+    
     $results = array();
     $results['pageTitle'] = "New User";
     $results['formAction'] = "newUser";
@@ -478,39 +496,49 @@ function newUser()
 
 
 
+
+
+
 /**
- * Редактирование статьи
+ * Редактирование Пользвателя
  * 
  * @return null
  */
 function editUser() {
-      
+    
+     if( !($_SESSION['username'] == ADMIN_USERNAME) ){ 
+       header( "Location: admin.php" );
+    }
+    
     $results = array();
     $results['pageTitle'] = "Edit User";
     $results['formAction'] = "editUser";
 
     if (isset($_POST['saveChanges'])) {
 
-        // Пользователь получил форму редактирования статьи: сохраняем изменения
-        if ( !$user = Users::getById( (int)$_POST['userid'] ) ) 
+  
+        // Админ получил форму редактирования Пользвателя: сохраняем изменения
+        if ( !$user = Users::getById( (int)$_POST['userId'] ) ) 
         {
             header( "Location: admin.php?error=UserNotFound" );
             return;
         }
-        
+  
         $user->storeFormValues( $_POST );
         $user->update();
+        
+
         header( "Location: admin.php?status=changesSaved" );
 
     } elseif ( isset( $_POST['cancel'] ) ) {
 
-        // Пользователь отказался от результатов редактирования: возвращаемся к списку статей
-        header( "Location: admin.php" );
+        // Пользователь отказался от результатов редактирования: возвращаемся к списку Пользвателей
+        header( "Location: admin.php?action=listUsers" );
     } else {
 
         // Пользвоатель еще не получил форму редактирования: выводим форму
         $results['user'] = Users::getById((int)$_GET['userId']);
-        $data = Category::getList();
+        $data = Users::getAllUsers();
         $results['users'] = $data['results'];
 
         require( TEMPLATE_PATH . "/admin/editUser.php" );
@@ -521,24 +549,18 @@ function editUser() {
 
 
 
-function deleteUser() {
-
+function deleteUser() 
+{
+    if( !($_SESSION['username'] == ADMIN_USERNAME) ){ 
+       header( "Location: admin.php" );
+    }
+    
     if ( !$users = Users::getById( (int)$_GET['userId'] ) ) {
         header( "Location: admin.php?action=listUsers&error=usersNotFound" );
         return;
     }
-/*
-    $users = Users::getAllUsers( 1000000);
-
-    if ( $users['totalRows'] > 0 ) {
-        header( "Location: admin.php?action=listUsers&error=usersContainsArticles" );
-        return;
-    }
-*/
-
 
     $users->delete();
     header( "Location: admin.php?action=listUsers&status=UsersDeleted" );
 }
-
 

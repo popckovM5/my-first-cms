@@ -1,4 +1,4 @@
-<?php trace($results); ?>
+
 <?php include "templates/include/header.php" ?>
 <?php include "templates/admin/include/header.php" ?>
       
@@ -21,29 +21,25 @@
                     <th>active</th>
                 </tr>
 
+
         <?php foreach ( $results['users'] as $user ) { ?>
 
-                <tr onclick="location='admin.php?action=editUser&amp;userId=<?php echo $user['id'] ?>'">
+                <tr onclick="location='admin.php?action=editUser&amp;userId=<?php echo $user->id ?>'">
                     <td>
                         <?php 
                             echo $user->login;
-                           // echo $article->title
-                           die('dfgfd');
-                           trace($user);
-                                
-                
                         ?>
                     </td>
 
                      <td>
                         <?php 
-                            echo $user['password'];
+                            echo $user->password;
                         ?>
                     </td>
 
                      <td>
                         <?php 
-                            echo $user['active'];
+                            echo $user->active;
                         ?>
                     </td>
 

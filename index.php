@@ -60,7 +60,8 @@ function archive()
     
     $results['category'] = Category::getById( $categoryId );
     
-    $data = Article::getList( 100000, $results['category'] ? $results['category']->id : null );
+    /*====== ВОТ ТУТ Я ИЗМЕНИЛ( ДЛЯ ОТОБРАЖЕНИЯ ТОЛЬКО АКТИВНЫХ СТАТЕЙ ) ======*/
+    $data = Article::getList( 100000, $results['category'] ? $results['category']->id : null, "publicationDate DESC" ,1 );
     
     $results['articles'] = $data['results'];
     $results['totalRows'] = $data['totalRows'];

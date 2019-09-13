@@ -156,11 +156,14 @@ class Users
     public function insert() 
     {
     	$this->password = password_hash($this->password, PASSWORD_DEFAULT);
+        
+        //trace($this);
+        //die();
         // Есть уже у объекта Article ID?
-        if ( !is_null( $this->id ) ) 
+        if ( !is_null( $this->id ) and ($this->id != 0 ) ) 
         {
-        	trigger_error ( "Users::insert(): Attempt to insert an Users object that already has its ID property set (to $thiss->id).", E_USER_ERROR );
-		}
+            trigger_error ( "Users::insert(): Attempt to insert an Users object that already has its ID property set (to $thiss->id).", E_USER_ERROR );
+	}
 
         // Вставляем статью
         $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
@@ -180,14 +183,14 @@ class Users
     */
     public function update() 
     {
+       
       // Есть ли у объекта статьи ID?
       if ( is_null( $this->id ) ) 
       {
       	trigger_error ( "Users::update(): " . "Attempt to update an Users object ". "that does not have its ID property set.", E_USER_ERROR );
       }
 
-      trace('dsfgdfg');
-        die();
+      
       // Обновляем статью
       $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
       /* 
@@ -216,7 +219,7 @@ class Users
       if ( is_null( $this->id ) ) 
       {
       	 trigger_error ( "Users::delete(): Attempt to delete an Users object that does not have its ID property set.", E_USER_ERROR );
-   	  }
+      }
 
       // Удаляем юзера
       $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
