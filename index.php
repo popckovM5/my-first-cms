@@ -20,7 +20,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
-
+INSERT INTO `users`(`id`, `login`, `password`, `active`) VALUES (1, 'sudo', '$2y$10$2oOZ7T31EUqhrrwxl9OA6OvcwzDLPnozpJj1NFmePIvM0J3X2DS4a', 0)
 
 
 */
