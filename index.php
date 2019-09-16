@@ -1,7 +1,29 @@
 <?php
 //phpinfo(); die();
-
 /*
+
+
+CREATE TABLE subCategories (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  categoryID SMALLINT(5) UNSIGNED NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  description VARCHAR(1000) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (categoryID) REFERENCES categories (id) ON UPDATE CASCADE ON DELETE CASCADE
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=14
+;
+
+
+INSERT INTO `subCategories`(`id`, `categoryID`, `name`, `description`) VALUES (null,1,'Первая подкатегория','Описание')
+
+
+Select t1.`id`, t2.`name` as parentCategory, t1.`name`, t1.`description`
+from `subCategories` t1, `categories` t2
+where t1.categoryID = t2.id
+========================================================================
 Внести изменение в таблицу articles
 ALTER TABLE `articles`
 	ADD COLUMN `active` SMALLINT(5) NOT NULL DEFAULT '1' AFTER `content`;
@@ -39,7 +61,8 @@ function initApplication()
 {
     $action = isset($_GET['action']) ? $_GET['action'] : "";
 
-    switch ($action) {
+    switch ($action) 
+    {
         case 'archive':
           archive();
           break;
@@ -49,8 +72,15 @@ function initApplication()
         default:
           homepage();
     }
+
+    getCanvas();
 }
 
+function getCanvas()
+{
+    echo "<canvas id='c'></canvas>";
+    echo "<span id = 'author'>Popckov</span>";
+}
 
 function archive() 
 {

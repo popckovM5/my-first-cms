@@ -32,7 +32,7 @@ switch ($action)
     case 'logout':// Удалить сессию и перезайти на этотже скрипт
         logout();
         break;
-    case 'newArticle':// Создать новую статью
+    case 'newArticle'://================= Создать новую статью =================
         newArticle();
         break;
     case 'editArticle':// Редактирование статьи 
@@ -41,7 +41,7 @@ switch ($action)
     case 'deleteArticle':// Удалить статью из БД
         deleteArticle();
         break;
-    case 'listCategories':// Показать все категории
+    case 'listCategories'://=============== Показать все категории =================
         listCategories();
         break;
     case 'newCategory':// Создать новую категорию
@@ -53,7 +53,7 @@ switch ($action)
     case 'deleteCategory':// Удалить категорию
         deleteCategory();
         break;
-    case 'listUsers':// Создать новую статью
+    case 'listUsers'://================= Создать новую статью =================
         listUsers();
         break;
     case 'newUser':// Создать новую статью
@@ -64,6 +64,18 @@ switch ($action)
         break;
     case 'deleteUser':// Создать новую статью
         deleteUser();
+        break;
+    case 'listSubCategories'://=============== Создать новую Подкатегорию ===============
+        listSubCategories();
+        break;
+    case 'newSubCategory':// Создать новую статью
+        newSubCategory();
+        break;
+    case 'editSubCategories':// Редактировать новую статью
+        editSubCategories();
+        break;
+    case 'deleteSubCategories':// Удалить новую статью
+        deleteSubCategories();
         break;
     default:
         listArticles();// Показать все статьи по дефолту
@@ -564,3 +576,170 @@ function deleteUser()
     header( "Location: admin.php?action=listUsers&status=UsersDeleted" );
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*================= РАЗДЕЛ ДЛЯ ПОДКАТЕГОРИЙ ==================*/
+
+function listSubCategories() 
+{
+        $results = array();
+        $data = subCategories::getList();
+
+        $results['subCategories'] = $data['results'];
+        $results['totalRows'] = $data['totalRows'];
+        $results['pageTitle'] = "Users Categories";
+    
+
+        if ( isset( $_GET['error'] ) ) 
+        {
+            if ( $_GET['error'] == "UserNotFound" ) 
+            {
+                $results['errorMessage'] = "Error: User not found.";
+            }
+        }
+
+
+        if ( isset( $_GET['status'] ) ) {
+            if ( $_GET['status'] == "changesSaved" ) $results['statusMessage'] = "Your changes have been saved.";
+            if ( $_GET['status'] == "userDeleted" ) $results['statusMessage'] = "Users deleted.";
+        }
+       
+        require( TEMPLATE_PATH . "/admin/listSubCategories.php" );
+   
+}
+
+
+
+
+
+/**
+ *  Создание нового Пользвателя 
+ */
+function newSubCategory() 
+{
+    
+    $results = array();
+    $results['pageTitle'] = "New SubCategory";
+    $results['formAction'] = "SubCategory";
+
+    if ( isset( $_POST['saveChanges'] ) ) 
+    {
+        //  trace($results);  trace($_POST);
+          
+        
+        // В $_POST данные о статье сохраняются корректно
+        // Пользователь получает форму редактирования статьи: сохраняем новую статью
+        $subCategories = new SubCategories();
+        $subCategories->storeFormValues( $_POST );
+        // trace($article);
+        // 
+        // 
+        //А здесь данные массива $article уже неполные(есть только Число от даты, категория и полный текст статьи)          
+        $subCategories->insert();
+        header( "Location: admin.php?status=changesSaved" );
+
+    } elseif ( isset( $_POST['cancel'] ) ) {
+
+        // Пользователь сбросил результаты редактирования: возвращаемся к списку статей
+        header( "Location: admin.php" );
+    } else {
+
+        // Пользователь еще не получил форму редактирования: выводим форму
+        $results['user'] = new SubCategories;
+        $data = SubCategories::getList();
+        $results['subCategories'] = $data['results'];
+        require( TEMPLATE_PATH . "/admin/editSubCategories.php" );
+    }
+}
+
+
+
+
+
+
+
+
+
+/**
+ * Редактирование Пользвателя
+ * 
+ * @return null
+ */
+function editSubCategories() 
+{
+
+    $results = array();
+    $results['pageTitle'] = "Edit SubCategories";
+    $results['formAction'] = "editSubCategories";
+
+    if (isset($_POST['saveChanges'])) {
+
+        // Админ получил форму редактирования Пользвателя: сохраняем изменения
+        if ( !$SubCategories = SubCategories::getById( (int)$_POST['subCategoryId'] ) ) 
+        {
+            header( "Location: admin.php?error=UserNotFound" );
+            return;
+        }
+  
+        $SubCategories->storeFormValues( $_POST );
+        $SubCategories->update();
+        
+
+        header( "Location: admin.php?status=changesSaved" );
+
+    } elseif ( isset( $_POST['cancel'] ) ) {
+
+        // Пользователь отказался от результатов редактирования: возвращаемся к списку Пользвателей
+        header( "Location: admin.php?action=listSubCategories" );
+    } else {
+
+        // Пользвоатель еще не получил форму редактирования: выводим форму
+        $results['SubCategories'] = SubCategories::getById((int)$_GET['subCategoryId']);
+        $data = SubCategories::getList();
+        $results['SubCategories'] = $data['results'];
+
+        require( TEMPLATE_PATH . "/admin/editSubCategories.php" );
+    }
+
+}
+
+
+
+
+
+/*  */
+function deleteSubCategories() 
+{
+    if ( !$users = Users::getById( (int)$_GET['userId'] ) ) {
+        header( "Location: admin.php?action=listUsers&error=usersNotFound" );
+        return;
+    }
+
+    $users->delete();
+    header( "Location: admin.php?action=listUsers&status=UsersDeleted" );
+}

@@ -3,7 +3,7 @@
  * Класс для обработки категорий статей
  */
 
-class Category
+class subCategories
 {
     // Свойства
 
@@ -11,6 +11,12 @@ class Category
     * @var int ID категории из базы данных
     */
     public $id = null;
+
+    /**
+    * @var string Название категории
+    */
+    public $categoryID = null;
+    public $parentCategory = null;
 
     /**
     * @var string Название категории
@@ -37,6 +43,8 @@ class Category
 
     public function __construct( $data=array() ) {
       if ( isset( $data['id'] ) ) $this->id = (int) $data['id'];
+      if ( isset( $data['categoryID'] ) ) $this->categoryID = $data['categoryID'];
+      if ( isset( $data['parentCategory'] ) ) $this->parentCategory = $data['parentCategory'];
       if ( isset( $data['name'] ) ) $this->name = $data['name'];
       if ( isset( $data['description'] ) ) $this->description = $data['description'];
     }
@@ -61,18 +69,31 @@ class Category
     * @return Category|false Объект Category object или false, если запись не была найдена или в случае другой ошибки
     */
 
+
+
     public static function getById( $id ) 
     {
         $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
-        $sql = "SELECT * FROM categories WHERE id = :id";
+
+
+        $sql = "SELECT * FROM subCategories WHERE id = :id";
         $st = $conn->prepare( $sql );
         $st->bindValue(":id", $id, PDO::PARAM_INT);
         $st->execute();
         $row = $st->fetch();
+
+
+
+
         $conn = null;
+        
         if ($row) 
-            return new Category($row);
+        {
+          return new SubCategories($row);
+        }
     }
+
+
 
 
     /**
@@ -91,25 +112,37 @@ class Category
     //            $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM categories
     //	            ORDER BY " .$conn->query($order) . " LIMIT :numRows";
 
-    $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM categories
-            ORDER BY $order LIMIT :numRows";
+    /*$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM subCategories
+            ORDER BY $order LIMIT :numRows";*/
 
-    $st = $conn->prepare( $sql );
-    $st->bindValue( ":numRows", $numRows, PDO::PARAM_INT );
-    $st->execute();
+
+    $sql = "SELECT 
+            t1.`id`, 
+            t2.`name` as parentCategory, 
+            t1.`name`, 
+            t1.`description`
+            FROM `subCategories` t1, `categories` t2
+            WHERE t1.categoryID = t2.id
+           ";
+    
+
+
+    $result = $conn->query($sql);
     $list = array();
-
-    while ( $row = $st->fetch() ) {
-      $category = new Category( $row );
-      $list[] = $category;
-    }
+    while ($row = $result->fetch(\PDO::FETCH_ASSOC)) 
+    {
+      $list[] = new subCategories($row);
+    } 
 
     // Получаем общее количество категорий, которые соответствуют критериям
     $sql = "SELECT FOUND_ROWS() AS totalRows";
     $totalRows = $conn->query( $sql )->fetch();
     $conn = null;
     return ( array ( "results" => $list, "totalRows" => $totalRows[0] ) );
+
     }
+
+
 
 
     /**
